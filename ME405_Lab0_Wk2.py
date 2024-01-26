@@ -21,6 +21,7 @@ from serial import Serial
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
                                                NavigationToolbar2Tk)
+import numpy as np
 
 
 def plot_example(plot_axes, plot_canvas, xlabel, ylabel):
@@ -46,8 +47,8 @@ def plot_example(plot_axes, plot_canvas, xlabel, ylabel):
     ser = Serial('/dev/cu.usbmodem206133B057522') # open serial port
     #ser.open()
     
-    times = []
-    voltages = []
+    time_vals = []
+    voltage_vals = []
         
     print(ser.name) # check which port was really used
     
@@ -59,7 +60,7 @@ def plot_example(plot_axes, plot_canvas, xlabel, ylabel):
         try: # see if number
             line = ser.readline() # read a '\n' terminated line
             
-            if (b'End') in line: 
+            if (b'end\r\n') in line: 
                 break
             
             columns = line.split(b',')
@@ -67,36 +68,53 @@ def plot_example(plot_axes, plot_canvas, xlabel, ylabel):
             voltage = columns[1]
             
             time = float(time) # try to convert to float
-            voltage = float(time)
+            voltage = float(voltage)
             
             #print('in try loop')
             
         except ValueError: # non-numeric values
-            print('this row is not values')
+            print('This row is not values')
             
         except IndexError:
             print('Bad Line')
-            print(f'{line}')
+            #print(f'{line}')
             
         else: # now process numbers
             print(f'{line}')
-            times.append(time)
-            voltages.append(voltage)
+            time_vals.append(time)
+            voltage_vals.append(voltage)
     
     ser.close()
     
-    print(times)
+    print('Data Collection Done')
+    #print(time_vals)
+    #print(voltage_vals)  
+
+    R = 99100 #Ohms
+    C = 0.0000033 #Farads
+    Vmax = 3.3
+    time_thy_ms = np.arange(0,4000,10) # seconds
+    time_thy_s = time_thy_ms/1000
     
-    #times = [t / 7 for t in range(200)]
-    #rando = random() * 2 * math.pi - math.pi
-    #boing = [-math.sin(t + rando) * math.exp(-(t + rando) / 11) for t in times]
+    #print(time_thy_s)
+    
+    Exp = np.exp(-time_thy_s/(R*C))
+    
+    V = Vmax*(1-Exp)
+    #print(V)
 
     # Draw the plot. Of course, the axes must be labeled. A grid is optional
-#     plot_axes.plot(times, boing)
-#     plot_axes.set_xlabel(xlabel)
-#     plot_axes.set_ylabel(ylabel)
-#     plot_axes.grid(True)
-#     plot_canvas.draw()
+    plot_axes.plot(time_vals, voltage_vals,'o',color='rebeccapurple')
+    plot_axes.plot(time_thy_ms, V, color='orchid')
+    
+    names = {'Step Response Test': 'rebeccapurple','Theoretical Curve':'orchid'}
+    
+    plot_axes.legend(names)
+    
+    plot_axes.set_xlabel(xlabel)
+    plot_axes.set_ylabel(ylabel)
+    plot_axes.grid(True)
+    plot_canvas.draw()
 
 
 def tk_matplot(plot_function, xlabel, ylabel, title):
@@ -152,6 +170,6 @@ def tk_matplot(plot_function, xlabel, ylabel, title):
 if __name__ == "__main__":
     tk_matplot(plot_example,
                xlabel="Time (ms)",
-               ylabel="Boing (cm)",
-               title="Otterly Silly")
+               ylabel="Voltage (V)",
+               title="Voltage vs Time")
 
