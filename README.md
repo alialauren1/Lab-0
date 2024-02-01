@@ -8,4 +8,4 @@ It then sends to data to our PC via serial port.
 
 On the micropython board a program has been created to set pin C0. A circuit connected to C0 consisting of two resistors and a capacitor which then then outputted to the ADC pin on then board. The program takes voltage measurements every 20 ms. The timing of each measurement is controlled using an ISR on the board. The captured data is then tabulated in a CSV formatting and is sent to the connected PC via the serial port. On our the PC a program that creates a GUI and reads the CSV data that has been sent through the serial port. The voltage data is then plotted against time. The code also calculates the theoretical response of the circuit using V(t) = V_max*(1-exp(-t/(RC)).
 
-Our results are slightly offset from the theoretical value. We 
+Our results are slightly offset from the theoretical value. The steady state response of the theoretical curve is slightly higher than the experimental steady state response. We think it could be because of the loss of voltage between wiring causing the experimental steady state response to be lower. 
