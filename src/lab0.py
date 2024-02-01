@@ -8,7 +8,7 @@ default.
 This file is based loosely on an example found at
 https://matplotlib.org/stable/gallery/user_interfaces/embedding_in_tk_sgskip.html
 
-@author Spluttflob
+@author Alia Wolken, Eduardo Santos, Andrew Jwaideh
 @date   2023-12-24 Original program, based on example from above listed source
 @copyright (c) 2023 by Spluttflob and released under the GNU Public Licenes V3
 """
